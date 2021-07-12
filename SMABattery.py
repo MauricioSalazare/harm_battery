@@ -38,8 +38,8 @@ import argparse
 import json
 
 class SMABattery:
-    MODBUS_IP = '127.0.0.1'
-    MODBUS_PORT = '5502'
+    MODBUS_IP = '192.168.105.20'
+    MODBUS_PORT = 502
     MAX_CHARGE_VALUE = 5500
     MAX_DISCHARGE_VALUE = -5500
     ACTIVATE_CONTROL_ADDRESS = 40151
@@ -52,12 +52,13 @@ class SMABattery:
     def __init__(self, modbus_ip=MODBUS_IP, modbus_port=MODBUS_PORT):
         self.MODBUS_IP = modbus_ip
         self.MODBUS_PORT = modbus_port
-        self.connect()
+        assert self.connect()
 
     def connect(self):
         try:
-            self.sunSpecClient = clientSunspec.SunSpecClientDevice(clientSunspec.TCP, 126, ipaddr=self.MODBUS_IP, ipport=self.MODBUS_PORT, timeout=60.0)
+            self.sunSpecClient = clientSunspec.SunSpecClientDevice(clientSunspec.TCP, 126, ipaddr=self.MODBUS_IP, ipport=self.MODBUS_PORT, timeout=2.0)
             self.modbusClient = ModbusClient(self.MODBUS_IP, port=self.MODBUS_PORT, unit_id=3 , auto_open=True, auto_close=True)
+            print("Connection sucessful!")
             return True
         except:
             print("Error connecting to the inverter")
@@ -138,7 +139,7 @@ if __name__ == "__main__":
         print("---------------")
         print("Battery values:")
         print("---------------")
-        print(json.dumps(battery_sma.readSMAValues(), ident=4))
+        print(json.dumps(battery_sma.readSMAValues(), indent=4))
 
     else:
         print("Run the file with the correct arguments, use --help to know more.")
