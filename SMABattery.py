@@ -133,7 +133,9 @@ if __name__ == "__main__":
     if args.set_power is not None:
         assert isinstance(args.set_power, float), "Set power should be a float value"
         assert battery_sma.MAX_DISCHARGE_VALUE <= args.set_power <= battery_sma.MAX_CHARGE_VALUE, "Operating battery outside limits"
-        battery_sma.changePower(args.set_power)
+        while True:  # Keep sending command until interruption
+            battery_sma.changePower(args.set_power)
+            time.sleep(3)
 
     elif args.read:
         print("---------------")
