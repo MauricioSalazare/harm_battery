@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-s', '--set_power', required=False, type=float, default=None,
                         help="Set output power of the battery in Watts. Positive, give to the grid. Negative, charge. Max value: 5500 Watts on (dis)charge")
-    parser.add_argument('-r', '--read', required=False, type=float, default=None,
+    parser.add_argument('-r', '--read', required=False, type=bool, default=True,
                         help='Alpha for the learning rage.')
     args, unknown = parser.parse_known_args()
 
@@ -134,7 +134,7 @@ if __name__ == "__main__":
         assert battery_sma.MAX_DISCHARGE_VALUE <= args.set_power <= battery_sma.MAX_CHARGE_VALUE, "Operating battery outside limits"
         battery_sma.changePower(args.set_power)
 
-    elif args.read is not None:
+    elif args.read:
         print("---------------")
         print("Battery values:")
         print("---------------")
