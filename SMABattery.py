@@ -148,11 +148,14 @@ if __name__ == "__main__":
         assert battery_sma.MAX_DISCHARGE_VALUE <= args.set_power <= battery_sma.MAX_CHARGE_VALUE, "Operating battery outside limits"
         battery_sma.changePower(args.set_power)
 
-        time.sleep(8)
-        battery_sma.changePower(-5000)
-        time.sleep(20)
-        battery_sma.changePower(0)
-        time.sleep(120)
+        while True:
+            continue
+
+        # time.sleep(8)
+        # battery_sma.changePower(-5000)
+        # time.sleep(20)
+        # battery_sma.changePower(0)
+        # time.sleep(120)
 
     elif args.read:
         print("---------------")
