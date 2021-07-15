@@ -27,6 +27,7 @@ __version__ = '0.0.5'
 __status__  = 'Beta'
 
 import time
+import threading
 from collections import OrderedDict
 
 import sunspec.core.client as clientSunspec
@@ -49,10 +50,14 @@ class SMABattery:
     sunSpecClient = None
     modbusClient = None
 
+    SETPOINT = 0
+
     def __init__(self, modbus_ip=MODBUS_IP, modbus_port=MODBUS_PORT):
         self.MODBUS_IP = modbus_ip
         self.MODBUS_PORT = modbus_port
         assert self.connect()
+
+        threading.Thread(target=self.send_scheduled, daemon=True).start()
 
     def connect(self):
         try:
@@ -66,15 +71,23 @@ class SMABattery:
 
     def changePower(self, power):
         print(f"changePower {power}")
+        limited = self.__limit(power, self.MAX_DISCHARGE_VALUE, self.MAX_CHARGE_VALUE)
+        self.SETPOINT = limited
+        print(f"__limit result: {limited}")
+        
+        print("/changePower")
+
+    def send_scheduled(self):
+        print("Start scheduled sending")
         # 40149 Active power setpoint - int32
         # 40151 Eff./reac. pow. contr. via comm. 802 = "active" 803 = "inactive", ENUM - uint32
         # 40153 Reactive power setpoint - uint32
         # 0x0322 is the value (802) to activate the control of power via modbus communication
-        limited = self.__limit(power, self.MAX_DISCHARGE_VALUE, self.MAX_CHARGE_VALUE)
-        print(f"__limit result: {limited}")
-        self.__sendModbus(self.ACTIVATE_CONTROL_ADDRESS, 0x0322, "uint32")
-        self.__sendModbus(self.CHANGE_POWER_ADDRESS, limited, "int32")
-        print("/changePower")
+        while True:
+            print(f"Sending... {self.SETPOINT}W")
+            self.__sendModbus(self.ACTIVATE_CONTROL_ADDRESS, 0x0322, "uint32")
+            self.__sendModbus(self.CHANGE_POWER_ADDRESS, self.SETPOINT, "int32")
+            time.sleep(5)
 
     def readSMAValues(self):
         sma = {}
@@ -135,9 +148,11 @@ if __name__ == "__main__":
         assert battery_sma.MAX_DISCHARGE_VALUE <= args.set_power <= battery_sma.MAX_CHARGE_VALUE, "Operating battery outside limits"
         battery_sma.changePower(args.set_power)
 
-        # while True:  # Keep sending command until interruption
-        #     battery_sma.changePower(args.set_power)
-        #     time.sleep(3)
+        time.sleep(8)
+        battery_sma.changePower(-5000)
+        time.sleep(20)
+        battery_sma.changePower(0)
+        time.sleep(120)
 
     elif args.read:
         print("---------------")
