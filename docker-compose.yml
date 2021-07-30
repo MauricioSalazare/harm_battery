@@ -18,7 +18,7 @@ services:
         command: -H 172.17.0.1
     dbmanager_module:
         image: salazaem/modules_mqtt_v2:dbmanager_x
-        command: -H 172.17.0.1 --dbip 172.17.0.1
+        command: -H 172.17.0.1 --dbip 172.17.0.1 --cleardbtable
     forecast_module:
         network_mode: host
         image: salazaem/modules_mqtt_v2:forecast_x
