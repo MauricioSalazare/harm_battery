@@ -1,0 +1,28 @@
+# Run services for the battery operation
+
+version: '3'
+services:
+    timescaledb:
+        image: timescale/timescaledb:latest-pg12
+        ports:
+          - 5432:5432
+        volumes:
+          - super_db:/var/lib/postgresql/data
+        environment:
+          - POSTGRES_PASSWORD=postgres
+    battery_module:
+        image: salazaem/modules_mqtt_v2:battery_x
+        command: -H host.docker.internal
+    control_module:
+        image: salazaem/modules_mqtt_v2:controller_x
+        command: -H host.docker.internal
+    dbmanager_module:
+        image: salazaem/modules_mqtt_v2:dbmanager_x
+        command: -H host.docker.internal --dbip host.docker.internal
+    forecast_module:
+        network_mode: host
+        image: salazaem/modules_mqtt_v2:forecast_x
+        command: -H host.docker.internal
+volumes:
+    super_db:
+        external: true
