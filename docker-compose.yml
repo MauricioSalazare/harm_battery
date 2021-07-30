@@ -12,7 +12,7 @@ services:
           - POSTGRES_PASSWORD=postgres
     battery_module:
         image: salazaem/modules_mqtt_v2:battery_x
-        command: -H 172.17.0.1
+        command: -H 172.17.0.1 --mode 1 --enableinverter
     control_module:
         image: salazaem/modules_mqtt_v2:controller_x
         command: -H 172.17.0.1
@@ -22,7 +22,7 @@ services:
     forecast_module:
         network_mode: host
         image: salazaem/modules_mqtt_v2:forecast_x
-        command: -H 172.17.0.1
+        command: -H 172.17.0.1 --mode 1
 volumes:
     super_db:
         external: true
