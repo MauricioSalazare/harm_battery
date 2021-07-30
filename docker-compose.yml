@@ -12,17 +12,17 @@ services:
           - POSTGRES_PASSWORD=postgres
     battery_module:
         image: salazaem/modules_mqtt_v2:battery_x
-        command: -H host.docker.internal
+        command: -H 172.17.0.1
     control_module:
         image: salazaem/modules_mqtt_v2:controller_x
-        command: -H host.docker.internal
+        command: -H 172.17.0.1
     dbmanager_module:
         image: salazaem/modules_mqtt_v2:dbmanager_x
-        command: -H host.docker.internal --dbip host.docker.internal
+        command: -H 172.17.0.1 --dbip 172.17.0.1
     forecast_module:
         network_mode: host
         image: salazaem/modules_mqtt_v2:forecast_x
-        command: -H host.docker.internal
+        command: -H 172.17.0.1
 volumes:
     super_db:
         external: true
